@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Electricity Bill</title>
+
+<style>
+body {
+    font-family: sans-serif;
+    background-color: #f4f4f4;
+    padding: 10px;
+    margin: 0;
+}
+
+.container {
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    padding: 15px;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+h2 {
+    text-align: center;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.field {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #aaa;
+    box-sizing: border-box;
+    font-size: 1rem;
+}
+
+.btn-row {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+button {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    color: white;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.btn-submit { background-color: #5cb85c; }
+.btn-clear { background-color: #d9534f; }
+
+#txtDisplay {
+    width: 100%;
+    min-height: 50px;
+    font-family: monospace;
+    font-size: 14px;
+    padding: 15px;
+    box-sizing: border-box;
+    border: 1px solid #aaa;
+    background-color: #fafafa;
+    line-height: 1.6;
+    resize: none; 
+    overflow: hidden; 
+    white-space: pre; 
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>ELECTRICITY BILL</h2>
+
+    <div class="field">
+        <label>Customer Name :</label>
+        <input type="text" id="txtCname">
+    </div>
+
+    <div class="field">
+        <label>Reference Number :</label>
+        <input type="text" id="txtRefNum" oninput="validateNumber(this)">
+    </div>
+
+    <div class="field">
+        <label>Consumption (kWh) :</label>
+        <input type="number" id="txtConsumption">
+    </div>
+
+    <div class="field">
+        <label>Unpaid Months :</label>
+        <input type="number" id="txtMNP">
+    </div>
+
+    <div class="btn-row">
+        <button class="btn-submit" onclick="calc()">Submit</button>
+        <button class="btn-clear" onclick="clr()">Clear</button>
+    </div>
+
+    <textarea id="txtDisplay" readonly></textarea>
+</div>
+
+<script>
+
+function validateNumber(input) {
+    input.value = input.value.replace(/[^0-9]/g, '');
+}
+
+function formatPeso(amount) {
+    return "₱" + amount.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
+
+function calc() {
+    const name = document.getElementById('txtCname').value;
+    const ref = document.getElementById('txtRefNum').value;
+    const cons = parseFloat(document.getElementById('txtConsumption').value);
+    const mnp = parseInt(document.getElementById('txtMNP').value);
+
+    if (ref === "" || isNaN(cons) || isNaN(mnp)) {
+        alert("Please fill all fields with valid data.");
+        return;
+    }
+
+    const rate = 15.00;
+    const currentBill = cons * rate;
+    const arrears = mnp * currentBill;
+    const total = currentBill + arrears;
+
+    const now = new Date();
+    const date = now.toLocaleDateString();
+    const time = now.toLocaleTimeString();
+
+    const line = "----------------------------\n"; 
+
+    let res = "";
+    res += line;
+    res += "        BILL DETAILS        \n";
+    res += line;
+    res += "Ref No: " + ref + "\n";
+    res += "Name: " + name + "\n";
+    res += "Date: " + date + "\n";
+    res += "Time: " + time + "\n";
+    res += line;
+    res += "Usage: " + cons + " kWh\n";
+    res += "Rate: ₱15.00\n";
+    res += "Bill: " + formatPeso(currentBill) + "\n";
+    res += "Arrears: " + formatPeso(arrears) + "\n";
+    res += line;
+    res += "TOTAL: " + formatPeso(total) + "\n";
+    res += line;
+    res += "   THANK YOU FOR PAYING!";
+
+    const displayBox = document.getElementById('txtDisplay');
+    displayBox.value = res;
+    
+    displayBox.style.height = "auto";
+    displayBox.style.height = displayBox.scrollHeight + "px";
+}
+
+function clr() {
+    document.getElementById('txtCname').value = "";
+    document.getElementById('txtRefNum').value = "";
+    document.getElementById('txtConsumption').value = "";
+    document.getElementById('txtMNP').value = "";
+    
+    const displayBox = document.getElementById('txtDisplay');
+    displayBox.value = "";
+    displayBox.style.height = "50px";
+}
+
+</script>
+
+</body>
+</html>
